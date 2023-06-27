@@ -2,14 +2,60 @@
 <html>
 <head>
 <title>Peer-to-Peer Chat</title>
-<link rel="stylesheet" href="main.css">
+<style>
+body {
+  font-family: sans-serif;
+}
+
+.chat-box {
+  width: 300px;
+  height: 300px;
+  border: 1px solid black;
+  margin: 0 auto;
+}
+
+.message {
+  margin: 5px 0;
+}
+
+.sender {
+  color: blue;
+}
+
+.receiver {
+  color: red;
+}
+</style>
 </head>
 <body>
-  <div id="chat-box">
-    <!-- Chat will show here -->
-  </div>
-  <input type="text" id="message-input">
-  <button id="send-message">Send Message</button>
-  <script src="main.js"></script>
+<div class="chat-box">
+  <ul>
+  </ul>
+  <input type="text" id="message" placeholder="Enter your message here...">
+  <button id="submit">Send</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+<script>
+var socket = io();
+
+socket.on("message", function(message) {
+  var li = document.createElement("li");
+  li.textContent = message;
+  if (message.sender === "me") {
+    li.classList.add("sender");
+  } else {
+    li.classList.add("receiver");
+  }
+  document.querySelector("ul").appendChild(li);
+});
+
+document.querySelector("#submit").addEventListener("click", function() {
+  var message = document.querySelector("#message").value;
+  socket.emit("message", {
+    message: message,
+    sender: "me"
+  });
+});
+</script>
 </body>
 </html>
